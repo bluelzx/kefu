@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>在线咨询</title>
+    <link rel="stylesheet" type="text/css" href="/im/css/R3.css">
+    <link rel="stylesheet" id="skin" type="text/css" href="/im/css/default/R3.css">
+    <!-- kindeditor -->
+    <link rel="stylesheet" type="text/css" href="/im/js/kindeditor/themes/default/default.css">
+    <script type="text/javascript" src="/im/js/kindeditor/kindeditor-min.js"></script>
+    <script type="text/javascript" src="/im/js/kindeditor/lang/zh-CN.js"></script>
+    <script src="/im/js/socket.io.js"></script>
+    <script type="text/javascript">
+		var editor , words;
+        KindEditor.ready(function (K) {
+            editor = K.create('textarea[name="content"]', {
+                autoHeightMode: false,
+                width: "100%",
+                resizeType: 0,
+                themeType: 'simple',
+                fontsize: 16,
+				newlineTag : "br" , 
+				filterMode:true,
+                items: ['emoticons', 'cut'],
+				htmlTags: {img:['src'],br:[]}  ,
+				afterChange : function() {
+					var count = this.count() ;
+					var limitNum = 300;  //设定限制字数
+					var pattern = '还可以输入' + limitNum + '字'; 
+					var strValue = this.html();
+					if(count > limitNum) {
+						pattern = ('字数超过限制，请适当删除部分内容');
+						//超过字数限制自动截取			 						
+						strValue = strValue.substring(0,limitNum);
+						editor.html(strValue);      
+					} else {
+						//计算剩余字数
+						var result = limitNum - this.count(); 
+						pattern = '还可以输入' +  result + '字'; 
+						if(result < 20){
+							document.getElementById('surplus').style.color = "red" ;	
+						}else{
+							document.getElementById('surplus').style.color = "#000000" ;								
+						}
+					}
+					if(this.count("text") == 0){
+						strValue= "" ;	
+					}
+					if(words != this.count("text")){
+						socket.emit('message', {
+								appid : "${appid!''}",
+								userid:"${userid!''}",
+								sign:"AFE2FF",
+								type:"writing",
+								session:"${sessionid!''}",
+								orgi:"${orgi!''}",
+								message : strValue
+						});
+					}
+					words = this.count("text") ;
+					document.getElementById('surplus').innerHTML = count+"/"+limitNum+" , " + pattern; //输入显示
+					 ////////
+				} 
+            });
+        });
+		KindEditor.options.cssData = "body { font-size: 15px; font-family:'Microsoft Yahei', 'Helvetica', 'Simsun', 'Arial';}";
+		var R3Ajax = {
+			ajax:function(opt){
+				var xhr = this.createXhrObject();
+				xhr.onreadystatechange = function(){
+					if(xhr.readyState!=4) return ;
+					(xhr.status===200 ?
+						opt.success(xhr.responseText,xhr.responseXML):
+						opt.error(xhr.responseText,xhr.status));
+				}
+				xhr.open(opt.type,opt.url,true);
+				if(opt.type!=='post') 
+					opt.data=null;
+				else
+					xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+				opt.data = this.parseQuery(opt.data);
+				xhr.send(opt.data);
+			},
+			post:function(url,success,data){
+				var popt = {
+					url:url,
+					type:'post',
+					data:data,
+					success:success,
+					error:function(data){}
+				}
+				this.ajax(popt);
+			},
+			get:function(url,success){
+				var gopt = {
+					url:url,
+					type:'get',
+					success:success,
+					error:function(){}
+				}
+				this.ajax(gopt);
+			},
+			createXhrObject:function(){
+				var methods = [
+					function(){ return new XMLHttpRequest();},
+					function(){ return new ActiveXObject('Msxml2.XMLHTTP');},
+					function(){ return new ActiveXObject('Microsoft.XMLHTTP');}
+				];
+				for(var i=0;len=methods.length,i<len;i++){
+					try{
+						methods[i]();
+					}catch(e){
+						continue;
+					}
+					this.createXhrObject = methods[i];
+					return methods[i]();
+				}
+				throw new Error('Could not create an XHR object.');
+			},
+			parseQuery:function(json){
+				if(typeof json == 'object'){
+					var str = '';
+					for(var i in json){
+						str += "&"+i+"="+encodeURIComponent(json[i]);
+					}
+					return str.length==0 ? str : str.substring(1);
+				}else{
+					return json;
+				}
+			}
+		};
+		Date.prototype.format = function(fmt) { 
+			 var o = { 
+				"M+" : this.getMonth()+1,                 //月份 
+				"d+" : this.getDate(),                    //日 
+				"h+" : this.getHours(),                   //小时 
+				"m+" : this.getMinutes(),                 //分 
+				"s+" : this.getSeconds(),                 //秒 
+				"q+" : Math.floor((this.getMonth()+3)/3), //季度 
+				"S"  : this.getMilliseconds()             //毫秒 
+			}; 
+			if(/(y+)/.test(fmt)) {
+					fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length)); 
+			}
+			 for(var k in o) {
+				if(new RegExp("("+ k +")").test(fmt)){
+					 fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+				 }
+			 }
+			return fmt; 
+		} 
+		var R3Helper = {
+			resize : function(){
+				var height = document.body.offsetHeight ;
+				document.getElementById('above').style.height = (height - 194 - 50)+"px" ;
+			}
+		}
+		window.onbeforeunload = function(){
+			return "您确定断开对话？" ;
+		}
+    </script>
+    <!-- kindeditor -->
+</head>
+<body style="overflow:hidden">
+<div class="large">
+    <div id="header">
+   		<img src="/images/logo.png" style="height:30px;padding:10px;">
+    </div>
+    <div id="containter" class="clearfix">
+        <div class="content-left">
+            <div class="chat-above" id="above">
+				<#if chatMessageList??>
+					<#list chatMessageList as chatMessage>
+						<#if chatMessage.values['userid']?? && imuser.id?? && imuser.id == chatMessage.values['userid']>
+							<div class="clearfix chat-block">
+								<div class="chat-right"> 
+									<img class="user-img" src="/im/img/user.png" alt="">
+									<div class="chat-message">
+										<label class="time">${chatMessage.values['create_time']!''}</label>
+										<label class="user">${chatMessage.values['username']!''}</label> 
+									</div>
+									<div class="chatting-right">
+										<i class="arrow"></i>
+										<div class="chat-content">${chatMessage.values['message']!''}</div>
+									</div>
+								</div>
+							</div>
+						<#else>
+							<div class="clearfix chat-block">
+								<div class="chat-left"> 
+									<img class="user-img" src="/im/img/user.png" alt="">
+									<div class="chat-message">
+										<label class="user">${chatMessage.values['username']!''}</label> 
+										<label class="time">${chatMessage.values['create_time']!''}</label>										
+									</div>
+									<div class="chatting-left">
+										<i class="arrow"></i>
+										<div class="chat-content">${chatMessage.values['message']!''}<br></div>
+									</div>
+								</div>
+							</div>
+						</#if>
+					</#list>
+				</#if>
+			</div>
+            <div class="chat-bottom" id="bottom">
+				<textarea id="message" name="content" style="visibility:hidden;"></textarea>
+				<div class="btn-push clearfix">
+					<div style="float:left;height:34px;line-height:34px;margin: 10px 20px 10px 5px;" id="surplus">0/200</div>
+					<button type="button" class="send-btn active special  clearfix" id="sent" onclick="sendMessage()">
+						发送
+					</button>
+				</div>
+			</div>
+        </div>
+        <div class="content-rig">
+            <div class="content-head">
+                <p>信息提示</p>
+            </div>
+            <div class="content-list">
+                <ul>
+                    <li>
+                        <p>公司：华夏银行</p>
+                    </li>
+                    <li>
+                        <p>部门：网银组100003</p>
+                    </li>
+                    <li>
+                        <p>客服Id:hx55526</p>
+                    </li>
+                    <li>
+                        <p>电话：13154151513</p>
+                    </li>
+                    <li>
+                        <p>电邮：LOGO@Hotmail.com</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="content-pic">
+                <a href="#">
+                    <img src="/im/img/pic01.jpg" alt="">
+                </a>
+            </div>
+        </div>
+    </div>
+    <div id="footer"></div>
+</div>
+<!--调查问卷弹框-->
+<div class="diaShade" id="diaShade" style="display: none"></div>
+<div class="dialogWrap" id="dialogWrap" style="display: none">
+    <div class="dialogCon">
+        <form action="#" id="commentContent">
+            <h2 class="diaHeader clearfix">
+                <span>评价</span>
+                <hr>
+            </h2>
+            <p class="title">您是否对此次服务满意?</p>
+            <!--评价-->
+            <p>
+                <span>评价：</span>
+                <input type="radio" name="comment" checked="" id="04">
+                <label for="04" class="radio">非常满意</label>
+                <input type="radio" name="comment" id="03">
+                <label for="03" class="radio">满意</label>
+                <input type="radio" name="comment" id="02">
+                <label for="02" class="radio">一般</label>
+                <input type="radio" name="comment" id="01">
+                <label for="01" class="radio">不满意</label>
+                <input type="radio" name="comment" id="00">
+                <label for="00" class="radio">不满意</label>
+            </p>
+            <!--描述-->
+            <p>
+                <span>描述：</span>
+                <textarea name="" id="descript"></textarea>
+            </p>
+            <!--按钮-->
+            <p class="submitBtnWrap">
+				<input type="button" class="btn submitBtn" id="submitBtn" value="确 定" onclick="popup('none')">
+            </p>
+        </form>
+    </div>
+</div>
+<script>
+	
+	R3Helper.resize();
+    // 调查问卷
+    var diaShade=document.getElementById('diaShade');
+    var dialogWrap=document.getElementById('dialogWrap');
+    function popup(para) {
+        diaShade.style.display=para;
+        dialogWrap.style.display=para;
+    }
+    // 参数连接
+    output('<span id="welcome-message">欢迎您来咨询！所有客户均可以免费注册试用，有关技术支持和商业咨询可以申请加入我们官方QQ群：555834343.</span>' , 'message  welcome');
+	var hostname = location.hostname ;
+    var socket = io.connect('http://'+hostname+':${port}/im/user?userid=${userid!''}&orgi=${orgi!''}&session=${sessionid!''}&appid=${appid!''}&osname=${(osname!'')?url}&browser=${(browser!'')?url}');
+    socket.on('connect',function(){
+        //service.sendRequestMessage(); 
+		//output('<span id="connect-message">'+ new Date().format("yyyy-MM-dd hh:mm:ss") + ' 开始沟通' +'</span>' , 'message connect-message');	 		
+    })
+    socket.on("agentstatus",function(data){
+       document.getElementById('connect-message').innerHTML=data.message;
+    })
+    socket.on("status",function(data){
+		output('<span id="connect-message">'+data.message+'</span>' , 'message connect-message');     
+    })
+    socket.on('message', function(data) {
+        var chat=document.getElementsByClassName('chatting-left').innerText;
+        chat = data.message;
+		if(data.calltype == "in"){
+			output('<div class="chat-right"> <img class="user-img" src="/im/img/user.png" alt=""><div class="chat-message"><label class="time">'+data.createtime+'</label><label  class="user">'+data.nickName+'</label> </div><div class="chatting-right"><i class="arrow"></i><div class="chat-content">'+chat+'</div></div>' , "chat-block");
+		}else if(data.calltype == "out"){
+			output('<div class="chat-left"> <img class="user-img" src="/im/img/user.png" alt=""><div class="chat-message"><label  class="user">'+data.nickName+'</label><label class="time">'+data.createtime+'</label> </div><div class="chatting-left"><i class="arrow"></i><div class="chat-content">'+chat+'</div></div>' , "chat-block");	
+		}
+    });
+    
+    socket.on('disconnect',function() {
+        output('<span id="connect-message">连接坐席失败，在线咨询服务不可用</span>' , 'message connect-message');
+    });
+    function sendDisconnect(){
+        socket.disconnect();
+    }
+    function sendMessage() {
+		editor.sync();
+        var message = document.getElementById('message').value;
+        editor.html('');
+        if(message!= ""){ 
+			socket.emit('message', {
+					appid : "${appid!''}",
+					userid:"${userid!''}",
+					sign:"AFE2FF",
+					type:"message" ,
+					session:"${sessionid!''}",
+					orgi:"${orgi!''}",
+					message : message
+			});
+		}
+    }
+    function output(message , clazz) {
+		if(clazz == "message connect-message"){
+			var messages = document.getElementsByClassName("connect-message") ;
+			for(inx =0 ; inx < messages.length ; ){
+				document.getElementById('above').removeChild(messages[inx]) ;
+				inx++ ;
+			}			
+		}
+        var element = ("<div class='clearfix "+clazz+"'>" +" " + message + "</div>");
+        document.getElementById('above').innerHTML= (document.getElementById('above').innerHTML + element);
+		document.getElementById('above').scrollTop = document.getElementById('above').scrollHeight  ;
+    }
+	function update(id , message) {
+        document.getElementById(id).innerHTML= message;
+    }
+    
+    var message={
+        // text:data.message,
+        // picture:function(){
+
+        // }
+        // file:function(){
+
+        // }
+        // lang:function(){
+
+        // }
+        // goods:function(){
+
+        // }
+        // POI:function(){
+
+        // }
+
+    }
+    // 回车事件
+    document.onkeyup=function(e){
+        if(!e) e=window.event;
+        if((e.keyCode||e.which)==13){
+            document.getElementById('sent').click();
+        }
+    }
+	window.onresize = function(){
+		R3Helper.resize();		
+	};
+</script>
+</body>
+</html>

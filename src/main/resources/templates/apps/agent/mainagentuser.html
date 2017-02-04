@@ -1,0 +1,88 @@
+<script language="javascript">
+cursession = "<#if curagentuser??>${curagentuser.id!''}</#if>" ;
+</script>
+
+<div class="main-agentuser">
+	<div class="chat-agent">
+		<h1 class="site-h1">${curagentuser.username!''}（${curagentuser.region!''}）</h1>
+		<div id="chat_msg_list" class="chat-message chat_msg_list">
+			<#if agentUserMessageList?? && agentUserMessageList?size gt 0>
+			<#list agentUserMessageList as chatmessage>
+			<div class="clearfix chat-block">
+				<div class="<#if chatmessage.userid?? && chatmessage.userid == user.id>chat-right<#else>chat-left</#if>">
+					<img alt="" src="/images/im/user.png" class="user-img">
+					<div class="chat-message">
+						<span class="user">${chatmessage.username!''}</span> 
+						<span class="time">${chatmessage.createtime!''}</span>
+					</div>
+					<div class="<#if chatmessage.userid?? && chatmessage.userid == user.id>chatting-right<#else>chatting-left</#if>">
+						<i class="userarrow"></i>
+						<div class="chat-content">${chatmessage.message!''}</div>
+					</div>
+				</div>
+			</div>
+			</#list>
+			<#elseif curagentuser??>
+				<#if curagentuser.status?? && curagentuser.status == "end">
+					<div class="clearfix chat-block connect-end" id="agentuser-curstatus">
+						<span class="connect-message">用户“${curagentuser.username!''}”已经离开</span>
+					</div>
+				<#else>
+					<div class="clearfix chat-block connect-begin" id="agentuser-curstatus">
+						<span class="connect-message">用户“${curagentuser.username!''}”开始对话</span>
+					</div>
+				</#if>
+			</#if>
+		</div>
+	</div>
+	<div class="chat-bottom">
+		<div class="row">
+			<div class="col-lg-12">
+				<textarea id="message" name="message"></textarea>
+				<button type="button" class="send-btn" onclick="sendMessage()">
+					发送
+				</button>
+				<style>
+					.ke-container{
+						border: 0px solid #E0E0E0;
+					}
+				</style>
+				<script language="javascript">
+					var editor;
+					$(document).ready(function(){		
+						KindEditor.ready(function(K) {
+							editor = K.create('#message', {
+								height:"160px",
+								themeType : 'simple',
+								width:"100%",
+								items:['undo', 'redo' , 'emoticons', 'image', 'insertfile'],
+								resizeType:0,
+								newlineTag : "br" , 
+								fontsize:16	 
+							});
+						});
+						KindEditor.options.cssData = "body { font-size: 15px; font-family:'Microsoft Yahei', 'Helvetica', 'Simsun', 'Arial';}";
+					});
+					function sendMessage(){
+						editor.sync();
+						var message = document.getElementById('message').value;
+						editor.html('');
+						top.WebIM.sendMessage(message , '${user.id!''}' , "appid" , "${user.sessionid!''}" , "${orgi!''}" , "<#if curagentuser??>${curagentuser.userid!''}</#if>" , "${user.username!''}");
+					}
+				</script>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="ukefu-chat-prop">
+	<div class="ukefu-prop-list">
+		<div class="layui-side-scroll">
+			<div class="row">
+				<div class="col-lg-12">
+					<h1 class="site-h1">用户属性</h1>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+</div>

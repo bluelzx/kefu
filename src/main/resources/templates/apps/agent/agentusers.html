@@ -1,0 +1,31 @@
+<div class="row">
+	<div class="col-lg-12">
+		<h1 class="site-h1">用户对话列表</h1>
+		<ul class="dialog-list" id="chat_users">
+			<#if agentUserList??>
+			<#list agentUserList as agentuser>
+			<li class="clearfix chat-list-item <#if curagentuser?? && curagentuser.id == agentuser.id>active</#if>"
+				id="agentuser_${agentuser.userid!''}" data-id="${agentuser.userid!''}">
+				<img src="/images/user-pc.png">
+				<div class="dialog-info">
+					<div class="address">
+						<a href="/agent/agentuser.html?id=${agentuser.id!''}" data-toggle="load" data-target="#ukefu-chat-agent" onclick="$('.chat-list-item.active').removeClass('active');$(this).closest('li.chat-list-item').addClass('active');"> 
+							<span>${agentuser.username!''}</span>
+						</a>
+						<div class="last-msg">23秒前</div>
+					</div>
+					<div class="news">
+						${agentuser.createtime?string('yyyy-MM-dd HH:mm:ss')} 
+						<#if agentuser.status?? && agentuser.status == 'end'>
+							<small class="label bg-gray pull-right" id="tip_message_${agentuser.userid!''}">离开</small>
+						<#else>
+							<small class="label bg-green pull-right" id="tip_message_${agentuser.userid!''}">在线</small>
+						</#if>
+						
+					</div>
+				</div></li>
+			</#list>
+			</#if>
+		</ul>
+	</div>
+</div>

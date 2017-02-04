@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta http-equiv="Cache-Control" content="no-siteapp" />
+        <meta name="viewport" content="width=device-width, maximum-scale=1.0, initial-scale=1.0,initial-scale=1.0,user-scalable=no" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <title>FhAdmin后台管理</title>
+        <link rel="stylesheet" href="assets/css/layui.css">
+		<link rel="stylesheet" href="assets/css/r3.css">
+		<script src="assets/layui.js"></script>
+	</head>
+    
+    <body>
+        <div class="layui-layout layui-layout-admin">
+            <div class="layui-header header header-demo">
+                <div class="layui-main">
+                   <ul class="layui-nav">
+                        <li class="layui-nav-item ">
+                            <a href="/doc/">文档</a></li>
+                        <li class="layui-nav-item layui-this">
+                            <a href="/demo/">演示</a></li>
+                        <li class="layui-nav-item">
+                            <a href="http://fly.layui.com/" target="_blank">社区</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="layui-side layui-bg-black">
+                <div class="layui-side-scroll">
+                    <ul class="layui-nav layui-nav-tree site-demo-nav">
+                        
+                        <li class="layui-nav-item layui-nav-itemed">
+                            <dl class="layui-nav-child">
+                                <dd class="">
+                                    <a href="/demo/layer.html">
+                                        <i class="layui-icon" style="top: 3px;">&#xe638;</i>
+									</a>
+                                </dd>
+                                <dd class="">
+                                    <a href="/demo/layim.html">
+                                        <i class="layui-icon" style="position: relative; top: 3px;">&#xe63a;</i>
+									</a>
+                                </dd>
+                                <dd class="">
+                                    <a href="/demo/laydate.html">
+                                        <i class="layui-icon" style="top: 1px;">&#xe637;</i>
+									</a>
+                                </dd>
+                                <dd class="">
+                                    <a href="/demo/laypage.html">
+                                        <i class="layui-icon">&#xe633;</i>
+									</a>
+                                </dd>
+                                <dd class="">
+                                    <a href="/demo/laytpl.html">
+                                        <i class="layui-icon">&#xe628;</i>
+									</a>
+                                </dd>
+                                <dd class="">
+                                    <a href="/demo/layedit.html">
+                                        <i class="layui-icon">&#xe639;</i>
+									</a>
+                                </dd>
+                                <dd class="">
+                                    <a href="/demo/upload.html">
+                                        <i class="layui-icon">&#xe62f;</i>
+									</a>
+                                </dd>
+                                <dd class="">
+                                    <a href="/demo/tree.html">
+                                        <i class="layui-icon">&#xe62e;</i>
+									</a>
+                                </dd>
+                                <dd class="">
+                                    <a href="/demo/util.html">
+                                        <i class="layui-icon">&#xe631;</i>
+									</a>
+                                </dd>
+                                <dd class="">
+                                    <a href="/demo/flow.html">
+                                        <i class="layui-icon">&#xe636;</i>
+									</a>
+                                </dd>
+                                <dd class="">
+                                    <a href="/demo/code.html">
+                                        <i class="layui-icon" style="top: 1px;">&#xe635;</i>
+									</a>
+                                </dd>
+                            </dl>
+                        </li>
+                        <li class="layui-nav-item" style="height: 30px; text-align: center"></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="layui-body">  
+				<div class="layui-tab product-tab" lay-allowClose="true">
+				  <ul class="layui-tab-title">
+					<li class="layui-this">网站设置</li>
+					<li>用户基本管理</li>
+					<li>权限分配</li>
+					<li>全部历史商品管理文字长一点试试</li>
+					<li>订单管理</li>
+				  </ul>
+				  <div class="layui-tab-content product-content">
+					<div class="layui-tab-item layui-show">1</div>
+					<div class="layui-tab-item">2</div>
+					<div class="layui-tab-item">3</div>
+					<div class="layui-tab-item">4</div>
+					<div class="layui-tab-item">5</div>
+					<div class="layui-tab-item">6</div>
+				  </div>
+				</div>
+               
+            </div>
+        </div>
+		<script>
+			layui.use('element', function(){
+			  var $ = layui.jquery
+			  ,element = layui.element(); //Tab的切换功能，切换事件监听等，需要依赖element模块
+			  
+			  //触发事件
+			  var active = {
+				tabAdd: function(){
+				  //新增一个Tab项
+				  element.tabAdd('demo', {
+					title: '新选项'+ (Math.random()*1000|0) //用于演示
+					,content: '内容'+ (Math.random()*1000|0)
+				  })
+				}
+				,tabDelete: function(){
+				  //删除指定Tab项
+				  element.tabDelete('demo', 2); //删除第3项（注意序号是从0开始计算）
+				}
+				,tabChange: function(){
+				  //切换到指定Tab项
+				  element.tabChange('demo', 1); //切换到第2项（注意序号是从0开始计算）
+				}
+			  };
+			  
+			  $('.site-demo-active').on('click', function(){
+				var type = $(this).data('type');
+				active[type] ? active[type].call(this) : '';
+			  });
+			});
+		</script>
+    </body>
+
+</html>

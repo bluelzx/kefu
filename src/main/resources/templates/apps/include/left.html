@@ -1,0 +1,44 @@
+<ul class="layui-nav layui-nav-tree" lay-filter="demo">
+	<li class="layui-nav-item <#if subtype?? && subtype == 'content'>layui-this</#if>">
+		<a class="layui-nav-default" href="/admin/content.html">客服系统概况</a>
+	</li>
+	<li class="layui-nav-item layui-nav-itemed">
+	<a class="layui-nav-title" 
+		href="javascript:;">用户和组</a>
+		<dl class="layui-nav-child">
+			<dd  <#if subtype?? && subtype == 'user'>class="layui-this"</#if>>
+				<a href="/admin/user/index.html">用户账号</a>
+			</dd>
+			<dd <#if subtype?? && subtype == 'role'>class="layui-this"</#if>>
+				
+				<a href="/admin/role/index.html">系统角色</a>
+			</dd>
+			<dd  <#if subtype?? && subtype == 'skill'>class="layui-this"</#if>>
+				<a href="/admin/skill/index.html">坐席组</a>
+			</dd>
+			<dd>
+				<a href="javascript:;">坐席设置</a>
+			</dd>
+			<dd>
+				<a href="javascript:;">选项二</a>
+			</dd>
+		</dl>
+	</li>
+	<li class="layui-nav-item layui-nav-itemed">
+		<a class="layui-nav-title" href="javascript:;">客服接入渠道</a>
+		<dl class="layui-nav-child">
+			<dd <#if subtype?? && subtype == 'webim'>class="layui-this"</#if>>
+				
+				<a href="/admin/webim/index.html">网页客服</a>
+			</dd>
+			<dd>
+				<a href="javascript:;">在线用户</a>
+			</dd><dd>
+				<a href="javascript:;">排队坐席</a>
+			</dd>
+			<dd>
+				<a href="javascript:;">客服记录</a>
+			</dd>
+		</dl>
+	</li>
+</ul>

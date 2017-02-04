@@ -1,0 +1,51 @@
+<script id="message_tpl" type="text/html">
+	<div class="clearfix chat-block" <%if(data.type == 'writing'){%>id="writing"<%}%>>
+		<div class="<% if(data.userid == '${user.id!''}'){%>chat-right<%}else{%>chat-left<%}%>">
+			<img alt="" src="/im/img/user.png" class="user-img">
+			<div class="chat-message">
+				<% if(data.userid == '${user.id!''}') {%>
+					<span class="time"><%=data.createtime%></span>
+					<span class="user"><%=data.username%></span>
+				<% }else{%>
+					<span class="user"><%=data.username%></span>
+					<span class="time"><%=data.createtime%></span>
+					
+				<%}%>
+			</div>
+			<div class="<% if(data.userid == '${user.id!''}'){%>chatting-right<%}else{%>chatting-left<%}%>">
+				<i class="userarrow"></i>
+				<div class="chat-content">
+					<%:=data.message%>
+				</div>
+				<%if(data.type == 'writing'){%>
+					<div class="chat-writing-message" title="正在输入...">
+						<span class="loading">
+							<span></span>
+							<span></span>
+							<span></span>
+							<span></span>
+						</span>
+					</div>						
+				<%}%>
+			</div>
+		</div>
+	</div>
+</script>
+<script id="end_tpl" type="text/html">
+	<div class="clearfix chat-block connect-end" id="agentuser-curstatus">
+		<span class="connect-message">用户“<%=data.username%>”已经离开</span>
+	</div>
+</script>
+<script id="begin_tpl" type="text/html">
+	<div class="clearfix chat-block connect-begin" id="agentuser-curstatus">
+		<span class="connect-message">用户“<%=data.username%>”开始对话</span>
+	</div>
+</script>
+<div class="layui-side layui-bg-black layui-left-black">
+	<div class="layui-side-scroll" id="agentusers">
+		<#include "/apps/agent/agentusers.html"/>
+	</div>
+</div>
+<div class="layui-body ukefu-chat-agent" id="ukefu-chat-agent">
+	<#include "/apps/agent/mainagentuser.html">
+</div>
